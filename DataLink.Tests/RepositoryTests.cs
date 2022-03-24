@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DataLink.Core;
 using DataLink.Core.Configuration;
 using DataLink.Tests.Mocks;
@@ -10,14 +11,30 @@ namespace DataLink.Tests {
     
     [TestClass]
     public class RepositoryTests {
+
+        [TestMethod]
+        public void ShouldQuery_InMemory() {
+            var collection = new List<Person> {
+                new () { Name = "Test1" },
+                new () { Name = "Test2" },
+            };
+
+            var hub = DataHubConfiguration.Default()
+                .Use(()=> collection.AsQueryable())
+                .CreateHub();
+
+            var results = hub.Get<Person>().ToList();
+            
+            Assert.AreEqual(2, results.Count);
+        }
         
         [TestMethod]
         public void ShouldQuery_Simple() {
             var configuration = DataHubConfiguration.Default();
             configuration.Use(() => new PersonRepository().Get());
 
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(4, results.Count);
         }
@@ -27,8 +44,8 @@ namespace DataLink.Tests {
             var configuration = DataHubConfiguration.Default();
             configuration.Use(() => new PersonRepository().Get());
 
-            var provider = DataHub.FromConfiguration(configuration);
-            var result = provider.Get<Person>().Count();
+            var hub = DataHub.FromConfiguration(configuration);
+            var result = hub.Get<Person>().Count();
             
             Assert.AreEqual(4, result);
         }
@@ -39,9 +56,9 @@ namespace DataLink.Tests {
             configuration.Use<PersonRepository>();
             configuration.Use<PetRepository>();
 
-            var provider = DataHub.FromConfiguration(configuration);
+            var hub = DataHub.FromConfiguration(configuration);
 
-            var results = provider.Get<HasAge>()
+            var results = hub.Get<HasAge>()
                 .Where(each => each.Age == 8)
                 .ToList();
 
@@ -54,9 +71,9 @@ namespace DataLink.Tests {
             configuration.Use<PersonRepository>();
             configuration.Use<PetRepository>();
 
-            var provider = DataHub.FromConfiguration(configuration);
+            var hub = DataHub.FromConfiguration(configuration);
 
-            var results = provider.Get<HasAge>()
+            var results = hub.Get<HasAge>()
                 .Where(each => each.Age == 8)
                 .Select(each => new {
                     Test = each.Age

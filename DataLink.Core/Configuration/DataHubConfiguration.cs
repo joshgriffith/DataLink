@@ -28,6 +28,10 @@ namespace DataLink.Core.Configuration {
             configuration.Use<InterceptionDispatcher>();
             return configuration;
         }
+
+        public DataHub CreateHub() {
+            return BuildServiceProvider().GetRequiredService<DataHub>();
+        }
         
         public DataHubConfiguration Use<T>(T singleton) where T : class {
             Register(singleton);
