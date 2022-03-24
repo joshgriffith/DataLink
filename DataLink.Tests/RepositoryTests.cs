@@ -20,7 +20,7 @@ namespace DataLink.Tests {
             };
 
             var hub = DataHubConfiguration.Default()
-                .Use(()=> collection.AsQueryable())
+                .Use(collection.AsQueryable())
                 .CreateHub();
 
             var results = hub.Get<Person>().ToList();

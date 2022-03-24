@@ -5,8 +5,8 @@ DataLink is a gateway for uniform access to arbitrary data sources. This highly 
  - *Routing:* Map types to providers such as ORMs, external services, caches or any other IQueryable source.
  - *Filtering:* Secure your data with composable query filters to modify IQueryables or expression trees.
  - *Interception:* Hook any part of the query pipeline with rule-based interceptors.
- - *Polymorphism:* Full support for interfaces / polymorphism for all operations, even if the underlying provider lacks support.
- - *Transactions:* Internal changetracking offers a performant option for changesets that can be committed atomically.
+ - *Polymorphism:* Full support for interfaces / type coercion for all operations.
+ - *Transactions:* Internal changetracking offers performant handling for atomic units of work.
  - *Aggregation:* Seamlessly query multiple data sources in parallel; the results are automatically aggregated.
 
 ## Examples
@@ -19,7 +19,7 @@ var collection = new List<Person> {
 
 // Configure a hub to use the collection
 var hub = DataHubConfiguration.Default()
-    .Use(()=> collection.AsQueryable())
+    .Use(collection.AsQueryable())
     .CreateHub();
 
 // Query by type, which will fetch the persons from the collection

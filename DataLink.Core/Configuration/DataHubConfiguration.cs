@@ -43,6 +43,11 @@ namespace DataLink.Core.Configuration {
             return this;
         }
 
+        public DataHubConfiguration Use<T>(IQueryable<T> queryable) where T : class {
+            Register(typeof(DefaultRepositoryFactory<T>), _ => new DefaultRepositoryFactory<T>(()=> queryable));
+            return this;
+        }
+
         public DataHubConfiguration Use<T>(Func<IQueryable<T>> factory) where T : class {
             Register(typeof(DefaultRepositoryFactory<T>), _ => new DefaultRepositoryFactory<T>(factory));
             return this;
