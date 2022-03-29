@@ -25,6 +25,10 @@ namespace DataLink.Core {
             return configuration.BuildServiceProvider().GetRequiredService<DataHub>();
         }
 
+        public bool CanAccess<T>(T entity) {
+            return ApplyFilters(new List<T> { entity }.AsQueryable()).First().Any();
+        }
+
         public IQueryable<T> Get<T>(bool useFilters = true) {
             var queryables = GetQueryables<T>().ToArray();
 
@@ -37,12 +41,15 @@ namespace DataLink.Core {
                 return visitors.Aggregate(query, (lastQuery, visitor) => visitor.Visit(lastQuery));
             }).ToArray();
 
-            if (useFilters) {
-                var filters = _provider.GetServices<QueryFilter>().ToArray();
-                queryables = queryables.Select(query => QueryFilter.Visit(query, filters)).ToArray();
-            }
+            if (useFilters)
+                queryables = ApplyFilters(queryables);
             
             return new AggregatedQuery<T>(OnDataReceived, queryables);
+        }
+
+        private IQueryable<T>[] ApplyFilters<T>(params IQueryable<T>[] queryables) {
+            var filters = _provider.GetServices<QueryFilter>().ToArray();
+            return queryables.Select(query => QueryFilter.Visit(query, filters)).ToArray();
         }
 
         private void OnDataReceived(IEnumerable results) {

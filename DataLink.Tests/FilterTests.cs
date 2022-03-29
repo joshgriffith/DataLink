@@ -21,10 +21,11 @@ namespace DataLink.Tests {
             configuration.Use(() => new PersonRepository().Get());
             configuration.Use<MarriageFilter>();
             
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(2, results.Count);
+            Assert.IsTrue(results.All(each => each.IsMarried));
         }
 
         [TestMethod]
@@ -35,8 +36,8 @@ namespace DataLink.Tests {
             configuration.Use<MarriageFilter>();
             configuration.Use<SingleFilter>();
             
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(4, results.Count);
         }
@@ -49,8 +50,8 @@ namespace DataLink.Tests {
             configuration.Use<SingleFilter>();
             configuration.Use<MarriageFilter>();
             
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(4, results.Count);
         }
@@ -62,8 +63,8 @@ namespace DataLink.Tests {
             configuration.Use(() => new PersonRepository().Get());
             configuration.Filter<CanDelete>(query => query.DeletedDate == null || DateTime.UtcNow < query.DeletedDate);
             
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(3, results.Count);
         }
@@ -76,8 +77,8 @@ namespace DataLink.Tests {
             configuration.Filter<Person>(query => !query.IsMarried);
             configuration.Filter<HasAge>(query => query.Age == 34);
 
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(3, results.Count);
         }
@@ -92,8 +93,8 @@ namespace DataLink.Tests {
             configuration.Filter<HasAge>(query => query.Age == 38);
             configuration.Use<DeletionQueryFilter>();
 
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(2, results.Count);
         }
@@ -105,8 +106,8 @@ namespace DataLink.Tests {
             configuration.Use(() => new PersonRepository().Get());
             configuration.Filter<BaseEntity>(x => x.DeletedDate == null || DateTime.UtcNow < x.DeletedDate);
 
-            var provider = DataHub.FromConfiguration(configuration);
-            var results = provider.Get<Person>().ToList();
+            var hub = DataHub.FromConfiguration(configuration);
+            var results = hub.Get<Person>().ToList();
             
             Assert.AreEqual(3, results.Count);
         }
