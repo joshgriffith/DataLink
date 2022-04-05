@@ -19,9 +19,6 @@ namespace DataLink.Core.Interceptors {
                         foreach (var listener in group.Value) {
                             foreach (var change in entry.GetChanges(group.Key, listener.Type)) {
                                 await listener.InvokeAsync(entry.Value, change.Value);
-
-                                //listener.Handler.Method.Invoke(listener.Handler.Target, new [] { entry.Value, change.Value });
-                                //listener.Handler.DynamicInvoke(entry.Value, change.Value);
                             }
                         }
                     }
@@ -30,23 +27,24 @@ namespace DataLink.Core.Interceptors {
         }
 
         public async Task AfterCommit(ChangeSet changes) {
+            throw new NotImplementedException();
         }
 
         public void On<X>(Expression<Func<T, X>> accessor, Func<T, X, Task> handler) {
             AddListener(accessor, new ChangeInvoker<X>(handler, ChangeTypes.Save));
         }
 
-        public void OnAdd(Func<T, IEnumerable, object, Task> handler) {
+        /*public void OnAdd(Func<T, IEnumerable, object, Task> handler) {
             throw new NotImplementedException();
-        }
+        }*/
 
         public void OnAdd<X>(Expression<Func<T, List<X>>> accessor, Func<T, X, Task> handler) {
-            AddListener(accessor, new ChangeInvoker<X>(handler, ChangeTypes.Create));
-        }
-
-        public void OnSave<X>(Expression<Func<T, List<X>>> accessor, Func<T, X, Task> handler) {
             AddListener(accessor, new ChangeInvoker<X>(handler, ChangeTypes.Save));
         }
+
+        /*public void OnSave<X>(Expression<Func<T, List<X>>> accessor, Func<T, X, Task> handler) {
+            AddListener(accessor, new ChangeInvoker<X>(handler, ChangeTypes.Save));
+        }*/
 
         public void OnRemove<X>(Expression<Func<T, List<X>>> accessor, Func<T, X, Task> handler) {
             AddListener(accessor, new ChangeInvoker<X>(handler, ChangeTypes.Delete));
