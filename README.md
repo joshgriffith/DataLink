@@ -17,11 +17,11 @@ Datalink was originally built to provide an abstraction layer to standardize acc
 The **DataHub** class is simply a router that maps types to data sources. It provides an abstraction layer to access these data sources by type lookup. Finally, a middleware pipeline is injected into a custom IQueryProvider so that queries and result sets can be augmented.
 
 ### Setup
-##### Start with a  configuration:
+#### Start with a  configuration:
 ```C#
 var configuration = DataHubConfiguration.Default();
 ```
-##### Register a collection that we want to access:
+#### Register a collection that we want to access:
 ```C#
 var characters = new List<Character> {
     new () { Name = "Luke Skywalker" },
@@ -30,7 +30,7 @@ var characters = new List<Character> {
 
 configuration.Use(characters);
 ```
-##### Create the hub and then fetch the collection by type
+#### Create the hub and then fetch the collection by type
 ```C#
 var hub = configuration.CreateHub();
 var characters = hub.Get<Character>().ToList();
@@ -38,7 +38,7 @@ var characters = hub.Get<Character>().ToList();
 
 ### Query filters
 Use the **QueryFilter** class to apply filters to queries with custom rules. This is useful for enforcing security or otherwise limiting the result set. All queries will automatically be augmented with the filter expression.
-##### Filter by type
+#### Filter by type
 ```C#
 public class JediFilter : QueryFilter<Character> {
     protected override Expression<Func<Character, bool>> GetFilterExpression() {
@@ -46,7 +46,7 @@ public class JediFilter : QueryFilter<Character> {
     }
 }
 ```
-##### Initialize the filters during configuration
+#### Initialize the filters during configuration
 ```C#
 var hub = DataHubConfiguration.Default()
     .Use(characters)
@@ -59,7 +59,7 @@ var characters = hub.Get<Character>().Where(each => each.Planet == "Bespin").ToL
 
 ### Interception
 You can use interceptors to inject behaviors into any part of the data pipeline.
-##### Log when any entity is loaded
+#### Log when any entity is loaded
 ```C#
 public class EntityLogger : LoadInterceptor<object> {
     protected override void OnLoad(object entity) {
@@ -68,7 +68,7 @@ public class EntityLogger : LoadInterceptor<object> {
 }
 ```
 
-##### Log when specific entities types are loaded
+#### Log when specific entities types are loaded
 ```C#
 public class CharacterLogger : LoadInterceptor<Character> {
     private ILogger _logger;
@@ -84,7 +84,7 @@ public class CharacterLogger : LoadInterceptor<Character> {
 }
 ```
 
-##### Log when specific entities types are saved
+#### Log when specific entities types are saved
 ```C#
 public class CharacterSavedLogger : SaveInterceptor<Character> {
     protected override void OnBeforeSave(Character character) {
@@ -97,7 +97,7 @@ public class CharacterSavedLogger : SaveInterceptor<Character> {
 }
 ```
 
-##### Log when any entity is deleted
+#### Log when any entity is deleted
 ```C#
 public class EntityDeletionLogger : DeleteInterceptor<Character> {
     protected override void OnBeforeDelete(Character character) {
@@ -112,7 +112,7 @@ public class EntityDeletionLogger : DeleteInterceptor<Character> {
 
 ### Change tracking
 DataLink uses internal snapshots to keep track of when properties change. This allows you to create interception rules if you need special handling for certain types of modifications. These interceptors trigger before saving the entity if the property has changed.
-##### Log when a property has changed
+#### Log when a property has changed
 ```C#
 public class LocationChangeLogger : ChangeInterceptor<Character> {
 
@@ -126,7 +126,7 @@ public class LocationChangeLogger : ChangeInterceptor<Character> {
 }
 ```
 
-##### Log when an item has been added or removed from a list
+#### Log when an item has been added or removed from a list
 ```C#
 public class InventoryLogger : ChangeInterceptor<Character> {
 
@@ -159,7 +159,7 @@ public class SpaceStation : ILocation {
 }
 ```
 
-##### Query by interface
+#### Query by interface
 If multiple compatible types are matched, results will be automatically aggregated.
 ```C#
 // The results include a combined set of both planets and space stations
