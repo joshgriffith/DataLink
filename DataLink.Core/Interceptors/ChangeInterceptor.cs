@@ -27,7 +27,17 @@ namespace DataLink.Core.Interceptors {
         }
 
         public async Task AfterCommit(ChangeSet changes) {
-            throw new NotImplementedException();
+            foreach (var entry in changes.Entries.Where(each => each.Value is T)) {
+                foreach (var group in _listeners) {
+                    if (entry.HasChange(group.Key)) {
+                        foreach (var listener in group.Value) {
+                            foreach (var change in entry.GetChanges(group.Key, listener.Type)) {
+                                await listener.InvokeAsync(entry.Value, change.Value);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public void On<X>(Expression<Func<T, X>> accessor, Func<T, X, Task> handler) {
